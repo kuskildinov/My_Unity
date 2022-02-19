@@ -7,23 +7,24 @@ public class BoomScript : MonoBehaviour
     public float TimeToExplosion;
     public float Power;
     public float Radius;
+    Vector3 explousionCenter;
 
     void Boom()
     {
-        Rigidbody[] blocks = FindObjectsOfType<Rigidbody>();
-        foreach ( Rigidbody B in blocks)
+        Collider[] colliders = Physics.OverlapSphere(explousionCenter, Radius);
+        foreach ( Collider B in colliders)
         {
-            if(Vector3.Distance(transform.position,B.transform.position) < Radius)
-            {
-                Vector3 direction = B.transform.position - transform.position;
-                B.AddForce(direction.normalized * Power * (Radius - Vector3.Distance(transform.position, B.transform.position)),ForceMode.Impulse);
-            }
+            Rigidbody body = B.GetComponent<Rigidbody>();
+
+            if (B != null && B.gameObject.layer != 10) body.AddExplosionForce(Power, explousionCenter, Radius, 30f);
         }
         TimeToExplosion = 3;
     }
     void Update()
     {
         TimeToExplosion -= Time.deltaTime;
+        explousionCenter = transform.position;
+
         if(TimeToExplosion <= 0)
         {
             Boom();
