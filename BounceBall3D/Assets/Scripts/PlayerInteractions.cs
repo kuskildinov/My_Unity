@@ -9,6 +9,7 @@ public class PlayerInteractions : MonoBehaviour
     [SerializeField] private ScenesManager scenesManager;
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private DoorController door;
+    [SerializeField] private ParticleSystem deadParticle;
 
     public bool characterOnFloor = true; 
 
@@ -22,8 +23,9 @@ public class PlayerInteractions : MonoBehaviour
         }
         //Запускается когда игрок попадает в зону Смерти
         if (other.tag == "deadZone")
-        {
-            Time.timeScale = 0;
+        {            
+            deadParticle.Play();
+            gameObject.SetActive(false);
             gameOverPanel.SetActive(true);
         }               
     }    
@@ -41,7 +43,10 @@ public class PlayerInteractions : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         // выключает подсказку "Нажмите Е"
-        door.HideE();
+        if (other.tag == "openDoor")
+        {
+            door.HideE();
+        }
     }
     private void OnCollisionEnter(Collision collision)
     {
